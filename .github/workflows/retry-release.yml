@@ -80,12 +80,14 @@ jobs:
                   failed = [s for s in job['steps'] if s['conclusion'] == 'failure']
                   if not failed:
                       continue
-                  log = command(['gh', 'api', f'repos/{repo}/actions/jobs/{job["id"]}/logs'])
+                  log = command(['gh', 'api', f'repos/{repo}/actions/jobs/{job["id"]}/logs', '--allow-escape-sequences'])
                   if log.returncode:
                       raise RuntimeError(log.stderr.strip())
+                  clean_log = re.sub(r'\x1b\[[0-?]*[ -/]*[@-~]', '', log.stdout)
+                  clean_log = ''.join(c for c in clean_log if c in '\n\r\t' or c.isprintable())
                   for step in failed:
                       start, end = step['started_at'][:19], step['completed_at'][:19]
-                      lines = [line for line in log.stdout.splitlines() if start <= line[:19] <= end]
+                      lines = [line for line in clean_log.splitlines() if start <= line[:19] <= end]
                       annotation('warning', 'Previous release failure', '\n'.join(lines[-80:])[-12000:])
 
               result = command(['gh', 'run', 'rerun', str(requested), '--failed'])
