@@ -23,6 +23,10 @@ Built with **SwiftUI and AppKit**, with a bundled [rclone](https://rclone.org/) 
 
 [Download for Apple Silicon](https://github.com/zealerFT/clouddock/releases/latest) · [Build from source](#build-from-source) · [Changelog](CHANGELOG.md) · [Report a bug](https://github.com/zealerFT/clouddock/issues)
 
+![CloudDock file workspace with multiple storage connections, bucket navigation, file actions, and pagination](docs/screenshots/workspace.png)
+
+*The file workspace on macOS. [More screenshots](#screenshots) below.*
+
 ## Features
 
 - **One workspace for multiple accounts.** Switch connections from the sidebar, browse buckets and folders, and bookmark frequently used locations.
@@ -33,6 +37,22 @@ Built with **SwiftUI and AppKit**, with a bundled [rclone](https://rclone.org/) 
 - **Share downloads.** Create links with preset or custom validity, copy the address in one click, and copy or save a QR code.
 - **Track changes across connections.** Local operation history records transfers, file changes, generated shares, and connection management, with filters by connection, action, result, and time.
 - **Choose credential storage.** Keep credentials encrypted locally, or opt into macOS Keychain for each connection.
+
+## Screenshots
+
+Actual macOS app captures with a Simplified Chinese interface. Private identifiers and share data are redacted. [Capture details](docs/screenshots/README.md).
+
+**Connection settings** — choose a provider, configure its endpoint, and select where credentials are stored.
+
+<img src="docs/screenshots/connection-settings.png" alt="New connection dialog showing MinIO endpoint settings, local credential storage, and empty access-key fields" width="600">
+
+**Share downloads** — set an expiry, copy the download address, or copy/save a QR code. The signed address and QR content are hidden in this capture.
+
+![Share Download dialog with expiry controls, QR actions, and one-click address copying](docs/screenshots/share-download.png)
+
+**Operation history** — review actions across connections, filter the results, and browse records by page.
+
+![Operation History showing connection, action, time, and result filters, operation records, and pagination](docs/screenshots/operation-history.png)
 
 ## Requirements
 
@@ -190,10 +210,6 @@ Checks cover pagination, Unicode/space/plus-sign object names, transfer bytes, o
 - No cross-cloud copy, synchronization, version-history browser, ACL/lifecycle editor, AWS SSO, Google browser OAuth, automatic token renewal, or automatic app updates.
 - Sharing supports single files, not folders. Signed-link support varies among S3-compatible services.
 - Symbolic links are not followed on upload. Remote paths containing `.`, `..`, empty segments, or backslashes are not supported.
-
-## Screenshots
-
-Actual app screenshots are still pending. Capture notes and planned views are in [docs/screenshots](docs/screenshots/README.md).
 
 ## Contributing
 

@@ -23,6 +23,10 @@ CloudDock 是为 Apple Silicon Mac 开发的原生对象存储客户端。在一
 
 [下载 Apple Silicon 安装包](https://github.com/zealerFT/clouddock/releases/latest) · [从源码构建](#从源码构建) · [更新记录](CHANGELOG.md) · [反馈问题](https://github.com/zealerFT/clouddock/issues)
 
+![CloudDock 文件工作台：多存储连接、存储桶导航、文件操作和分页](docs/screenshots/workspace.png)
+
+*macOS 上的文件工作台。下方还有[更多应用截图](#应用截图)。*
+
 ## 功能
 
 - **一个工作台，多个云账号**：在侧栏切换连接，浏览存储桶和文件夹，收藏常用位置。
@@ -33,6 +37,22 @@ CloudDock 是为 Apple Silicon Mac 开发的原生对象存储客户端。在一
 - **分享下载**：设置预设或自定义有效期，一键复制链接，复制或保存二维码。
 - **跨连接操作审计**：记录传输、文件变更、生成分享和连接管理，可按连接、操作、结果和时间筛选。
 - **选择凭据保存方式**：每个连接可使用本机加密存储，或选择 macOS 钥匙串。
+
+## 应用截图
+
+以下为 macOS 应用的真实截图，界面为简体中文。私人标识和分享数据已遮挡，详见[截图说明](docs/screenshots/README.md)。
+
+**连接配置**：选择存储服务、配置 Endpoint，并设置凭据的保存位置。
+
+<img src="docs/screenshots/connection-settings.png" alt="新建连接窗口：MinIO Endpoint、本机凭据保存方式和空白的密钥输入框" width="600">
+
+**分享下载**：设置有效期、一键复制地址、复制或保存二维码。截图中的签名地址和二维码内容已遮挡。
+
+![分享下载窗口：有效期设置、二维码操作和一键复制分享地址](docs/screenshots/share-download.png)
+
+**操作审计**：集中查看各连接的操作，按条件筛选结果，并分页浏览记录。
+
+![操作审计：连接、操作、时间和结果筛选，以及操作记录和分页](docs/screenshots/operation-history.png)
 
 ## 系统要求
 
@@ -190,10 +210,6 @@ python3 scripts/local-gcs-integration-test.py --endpoint http://localhost:4443
 - 不包含跨云复制、同步、版本历史浏览、ACL/生命周期编辑、AWS SSO、Google 浏览器 OAuth、自动续期凭据或应用自动更新。
 - 分享仅支持单个文件，不支持文件夹；S3 兼容服务对签名链接的支持可能不同。
 - 上传不跟随符号链接；不支持含 `.`、`..`、空段或反斜杠的远程路径。
-
-## 应用截图
-
-实际应用截图尚待补充，截图说明及计划展示的页面见 [docs/screenshots](docs/screenshots/README.md)。
 
 ## 参与贡献
 
