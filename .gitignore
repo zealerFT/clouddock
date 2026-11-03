@@ -1,0 +1,35 @@
+# Build products and downloaded transfer engine
+/.build/
+/.swiftpm/
+/vendor/
+/dist/
+
+# Private development notes and local test environments
+/docs/ai-dev/
+/.qa-venv/
+/.venv/
+__pycache__/
+*.py[cod]
+node_modules/
+
+# macOS and editor metadata
+.DS_Store
+._*
+xcuserdata/
+.idea/
+
+# Local credentials, connection state, and audit data
+.env
+.env.*
+!.env.example
+Credentials/
+*.vault
+*.key
+*.pem
+*.p12
+*.p8
+state.json
+audit.jsonl*
+service-account*.json
+*-credentials.json
+*.log

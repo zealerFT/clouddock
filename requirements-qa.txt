@@ -1,0 +1,2 @@
+# Only used by isolated localhost integration tests. Not bundled in the App.
+moto[server]==5.1.16
