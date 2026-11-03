@@ -18,6 +18,13 @@ def require(condition, message):
         raise SystemExit(message)
 
 
+def bundle_contents(app):
+    return {
+        path.relative_to(app).as_posix(): hashlib.sha256(path.read_bytes()).hexdigest()
+        for path in app.rglob('*') if path.is_file()
+    }
+
+
 def main():
     parser = argparse.ArgumentParser(description=__doc__)
     parser.add_argument('--directory', type=Path, default=ROOT / 'dist')
@@ -54,8 +61,19 @@ def main():
         subprocess.run(['codesign', '--verify', '--deep', '--strict', str(app)], check=True)
         for original, bundled in [('README.md', 'CloudDock-README.md'), ('README.zh-CN.md', 'CloudDock-README.zh-CN.md'), ('LICENSE', 'LICENSE')]:
             require((app / 'Contents/Resources' / bundled).read_bytes() == (ROOT / original).read_bytes(), f'Bundled document differs: {original}')
-    subprocess.run(['hdiutil', 'verify', str(directory / assets[0])], check=True)
-    print(f'CloudDock {version}: checksums, source contents, app version, ARM64, signature, path privacy, and DMG verified.')
+        expected_contents = bundle_contents(app)
+        image = directory / assets[0]
+        subprocess.run(['hdiutil', 'verify', str(image)], check=True)
+        mount = Path(temporary) / 'image.noindex'
+        mount.mkdir()
+        subprocess.run(['hdiutil', 'attach', '-readonly', '-nobrowse', '-mountpoint', str(mount), str(image)], check=True)
+        try:
+            image_app = mount / 'CloudDock.app'
+            require(bundle_contents(image_app) == expected_contents, 'DMG app contents differ from the verified ZIP')
+            subprocess.run(['codesign', '--verify', '--deep', '--strict', str(image_app)], check=True)
+        finally:
+            subprocess.run(['hdiutil', 'detach', str(mount)], check=True)
+    print(f'CloudDock {version}: checksums, source contents, app version, ARM64, signature, path privacy, and complete DMG app contents verified.')
 
 
 if __name__ == '__main__':

@@ -59,7 +59,17 @@ mkdir -p "$STAGE"
 ditto --noextattr --norsrc "$APP" "$STAGE/CloudDock.app"
 ln -s /Applications "$STAGE/Applications"
 cp INSTALL.txt "$STAGE/安装说明.txt"
-hdiutil create -volname CloudDock -srcfolder "$STAGE" -ov -format UDZO "dist/CloudDock-$VERSION-arm64.dmg"
+# Reserve room from logical file sizes: automatic APFS sizing can run out of
+# space while copying the bundled transfer engine into the temporary image.
+DMG_SIZE_MB="$(python3 - "$STAGE" <<'PY'
+from pathlib import Path
+import sys
+total = sum(p.stat().st_size for p in Path(sys.argv[1]).rglob('*') if p.is_file() and not p.is_symlink())
+print(max(256, (total + 1024 * 1024 - 1) // (1024 * 1024) + 64))
+PY
+)"
+printf 'Creating HFS+ installer with %s MiB capacity.\n' "$DMG_SIZE_MB"
+hdiutil create -volname CloudDock -fs HFS+ -size "${DMG_SIZE_MB}m" -srcfolder "$STAGE" -ov -format UDZO "dist/CloudDock-$VERSION-arm64.dmg"
 ditto -c -k --noextattr --norsrc --keepParent "$APP" "dist/CloudDock-$VERSION-arm64.zip"
 python3 - "$VERSION" <<'PY'
 import subprocess, sys, zipfile

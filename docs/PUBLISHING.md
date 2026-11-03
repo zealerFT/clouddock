@@ -78,6 +78,8 @@ Changes to app source, packaging scripts, the version file, or the release workf
 
 For a transient failure of an unpublished tagged release, use **Actions → Retry failed release → Run workflow** with the failed run ID. A maintainer working through Git can instead update `.github/release-retry.json` and push it to `main`. This workflow reports the failed step's log excerpt and reruns the original job using the repository's temporary Actions token. It checks that the tag still points to the original commit and refuses to retry a published release; no personal API token or tag replacement is needed. Diagnose failures before requesting further retries.
 
+Installers use HFS+ with capacity calculated from the staged files' logical sizes, plus 64 MiB of spare space, with a 256 MiB minimum. Verification mounts the DMG read-only, compares its app files with the ZIP, verifies its signature, and detaches the image before completing.
+
 ## Public file set
 
 Publish source, fake test fixtures, documentation, and reviewed images. `.gitignore` excludes build products, downloaded dependencies, local development notes, credentials, state, and logs. `scripts/check-public-files.py` checks the tracked public file set, and the source ZIP uses that same set. When building an extracted source ZIP without Git, it uses the explicit list in that script.

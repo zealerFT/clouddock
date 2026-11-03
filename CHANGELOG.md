@@ -2,6 +2,15 @@
 
 Notable changes to CloudDock are documented here. Version numbers match the packaged app's `CFBundleShortVersionString`.
 
+## [0.5.10] - 2026-11-03
+
+### Packaging and release checks
+
+- Create HFS+ installers with explicit capacity based on logical file sizes and 64 MiB of spare space. This addresses `hdiutil` running out of space while copying rclone into the installer image.
+- Mount each DMG read-only during verification, compare every app file with the verified ZIP, and verify the app signature inside the image.
+- Validate packaging changes on `main` before publication and expose failed build excerpts in check annotations.
+- Add a repository workflow to inspect and retry a failed, unpublished tagged release without replacing its tag or using a personal API token.
+
 ## [0.5.9] - 2026-11-03
 
 ### Fixed
