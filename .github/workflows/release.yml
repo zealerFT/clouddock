@@ -4,6 +4,14 @@ on:
   push:
     tags:
       - 'v[0-9]*'
+    branches:
+      - main
+    paths:
+      - '.github/workflows/release.yml'
+      - 'scripts/**'
+      - 'Sources/**'
+      - 'Package.swift'
+      - 'version.json'
   workflow_dispatch:
     inputs:
       tag:
@@ -15,7 +23,7 @@ permissions:
   contents: read
 
 concurrency:
-  group: release-${{ inputs.tag || github.ref_name }}
+  group: release-${{ inputs.tag || github.ref }}
   cancel-in-progress: false
 
 jobs:
@@ -25,21 +33,23 @@ jobs:
     permissions:
       contents: write
     env:
-      RELEASE_TAG: ${{ inputs.tag || github.ref_name }}
+      RELEASE_TAG: ${{ inputs.tag || (startsWith(github.ref, 'refs/tags/') && github.ref_name) || '' }}
     steps:
       - uses: actions/checkout@v4
         with:
-          ref: refs/tags/${{ inputs.tag || github.ref_name }}
+          ref: ${{ inputs.tag && format('refs/tags/{0}', inputs.tag) || github.sha }}
 
       - name: Check version and architecture
         shell: bash
         run: |
           set -euo pipefail
-          [[ "$RELEASE_TAG" =~ ^v[0-9]+\.[0-9]+\.[0-9]+$ ]]
           [[ "$(uname -m)" == arm64 ]]
           version=$(python3 -c 'import json; print(json.load(open("version.json"))["version"])')
-          [[ "$RELEASE_TAG" == "v$version" ]]
-          test -f "docs/releases/$RELEASE_TAG.md"
+          if [[ -n "$RELEASE_TAG" ]]; then
+            [[ "$RELEASE_TAG" =~ ^v[0-9]+\.[0-9]+\.[0-9]+$ ]]
+            [[ "$RELEASE_TAG" == "v$version" ]]
+          fi
+          test -f "docs/releases/v$version.md"
           python3 scripts/check-public-files.py
 
       - uses: actions/setup-python@v5
@@ -59,12 +69,29 @@ jobs:
           python3 scripts/integration-test.py
 
       - name: Build Apple Silicon installers
-        run: bash scripts/package.sh --no-install
+        shell: bash
+        run: |
+          set -o pipefail
+          if bash scripts/package.sh --no-install 2>&1 | tee "$RUNNER_TEMP/clouddock-package.log"; then
+            exit 0
+          else
+            status=$?
+            python3 - "$RUNNER_TEMP/clouddock-package.log" <<'PY'
+          from pathlib import Path
+          import sys
+          lines = Path(sys.argv[1]).read_text(errors='replace').splitlines()
+          message = '\n'.join(lines[-80:])[-12000:]
+          message = message.replace('%', '%25').replace('\r', '%0D').replace('\n', '%0A')
+          print('::error title=Installer build failed::' + message)
+          PY
+            exit "$status"
+          fi
 
       - name: Verify release archives
         run: python3 scripts/verify-release.py
 
       - name: Publish downloadable app
+        if: env.RELEASE_TAG != ''
         shell: bash
         env:
           GH_TOKEN: ${{ github.token }}
