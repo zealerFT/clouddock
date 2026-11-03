@@ -2,6 +2,18 @@
 
 Notable changes to CloudDock are documented here. Version numbers match the packaged app's `CFBundleShortVersionString`.
 
+## [0.5.9] - 2026-11-03
+
+### Fixed
+
+- Read the workspace footer version from app bundle metadata. Version 0.5.8 previously displayed a hard-coded `0.5.7` even after a successful installation.
+- Show a development label when running outside an app bundle instead of displaying an outdated release number.
+
+### Documentation
+
+- Add real app screenshots to the English and Chinese READMEs, with private identifiers and share data redacted.
+- Require completed local installation and version verification in the test-development workflow.
+
 ## [0.5.8] - 2026-11-03
 
 ### Documentation and packaging

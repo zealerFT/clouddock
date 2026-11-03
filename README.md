@@ -96,9 +96,9 @@ The fetch script downloads **rclone 1.75.2** for macOS ARM64 and verifies a pinn
 
 ```text
 dist/CloudDock.app
-dist/CloudDock-0.5.8-arm64.dmg
-dist/CloudDock-0.5.8-arm64.zip
-dist/CloudDock-0.5.8-source.zip
+dist/CloudDock-0.5.9-arm64.dmg
+dist/CloudDock-0.5.9-arm64.zip
+dist/CloudDock-0.5.9-source.zip
 dist/SHA256SUMS
 ```
 

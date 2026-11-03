@@ -24,6 +24,7 @@ struct WorkspaceView: View {
     @State private var renamePrompt = false
     @State private var fieldValue = ""
     @State private var renameTarget: RemoteEntry?
+    private static let appVersion = Bundle.main.object(forInfoDictionaryKey: "CFBundleShortVersionString") as? String ?? "开发版"
     private let teal = Color(red: 0.08, green: 0.52, blue: 0.48)
 
     var body: some View {
@@ -401,7 +402,7 @@ struct WorkspaceView: View {
                 .lineLimit(1)
             Spacer()
             if store.hasBucket && !store.showAudit { Text("同名文件：上传 / 下载前询问").foregroundStyle(.secondary) }
-            Text("CloudDock 0.5.7 · Apple Silicon").foregroundStyle(.tertiary)
+            Text("CloudDock \(Self.appVersion) · Apple Silicon").foregroundStyle(.tertiary)
         }.font(.system(size: 10)).padding(.horizontal, 20).frame(height: 29)
             .onChange(of: store.notice) { _, value in
                 guard value != nil else { return }

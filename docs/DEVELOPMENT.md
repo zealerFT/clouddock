@@ -22,6 +22,8 @@ bash scripts/package.sh
 
 Packaging builds an Apple Silicon app and installs it at `dist/CloudDock.app` when that copy is idle. If it is running, quit it and run `python3 scripts/install-local.py` to update the same copy. `bash scripts/package.sh --no-install` only produces release archives. Installing a new bundle must preserve app state and credentials in Application Support.
 
+For local test development, finish the installation after the checks pass. Honor any existing authorization to quit the app; do not stop at a successful build or an installation skipped because the app is running. Verify the installed bundle's version and build, and check the visible version when desktop control is available. Report any uncompleted installation or interface verification explicitly. The interface reads its version from the bundle metadata generated from `version.json`.
+
 Stage intentional files before preparing a source archive: in a Git checkout, the archive contains only tracked paths. The public-file check examines the contents of those paths in the working tree, so review staged and unstaged changes before committing. A source archive can also be built without Git; its fallback file list is defined in `scripts/check-public-files.py`.
 
 ## Architecture

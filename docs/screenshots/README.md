@@ -4,12 +4,16 @@ These are actual CloudDock captures on macOS, supplied by the maintainer. The ap
 
 以下图片来自维护者提供的 macOS 实际应用截图。界面为简体中文，中英文 README 共用同一组图片。截图展示拍摄时的界面，不代表最新发布版本。
 
-| Image / 图片 | View / 页面 | Capture date / 截图日期 | Source version / 原图版本 |
+| Image / 图片 | View / 页面 | Capture date / 截图日期 | Original footer label / 原图页脚版本文字 |
 | --- | --- | --- | --- |
 | [workspace.png](workspace.png) | File workspace / 文件工作台 | 2026-11-02 | 0.5.5 |
 | [connection-settings.png](connection-settings.png) | New Connection / 新建连接 | 2026-11-03 | 0.5.7 |
 | [share-download.png](share-download.png) | Share Download / 分享下载 | 2026-11-03 | 0.5.7 |
 | [operation-history.png](operation-history.png) | Operation History / 操作审计 | 2026-11-03 | 0.5.7 |
+
+Earlier footer labels were hard-coded and do not establish the installed bundle version. Version 0.5.9 fixes this display; the images retain the original interface.
+
+早期页脚版本号为固定文字，不能据此判断实际安装包版本。0.5.9 已修复这一显示问题；截图保留原始界面。
 
 ## Publication edits / 发布处理
 
