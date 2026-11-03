@@ -1,0 +1,98 @@
+name: Retry failed release
+
+on:
+  push:
+    branches: [main]
+    paths: ['.github/release-retry.json']
+  workflow_dispatch:
+    inputs:
+      run_id:
+        description: Failed Publish macOS app run ID
+        required: true
+        type: string
+
+permissions:
+  contents: read
+  actions: write
+
+concurrency:
+  group: retry-failed-release
+  cancel-in-progress: false
+
+jobs:
+  retry:
+    runs-on: ubuntu-latest
+    timeout-minutes: 5
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          persist-credentials: false
+      - name: Report failure and retry the original release
+        env:
+          GH_TOKEN: ${{ github.token }}
+          GH_REPO: ${{ github.repository }}
+          REQUESTED_RUN_ID: ${{ inputs.run_id }}
+        run: |
+          python3 <<'PY'
+          import json, os, re, subprocess
+          from pathlib import Path
+
+          def command(args):
+              return subprocess.run(args, capture_output=True, text=True, timeout=60)
+
+          def api(path):
+              result = command(['gh', 'api', path])
+              if result.returncode:
+                  raise RuntimeError(result.stderr.strip())
+              return json.loads(result.stdout)
+
+          def annotation(level, title, message):
+              message = message.replace('%', '%25').replace('\r', '%0D').replace('\n', '%0A')
+              print(f'::{level} title={title}::{message}')
+
+          try:
+              requested = os.environ.get('REQUESTED_RUN_ID') or json.loads(Path('.github/release-retry.json').read_text())['run_id']
+              if not re.fullmatch(r'[1-9][0-9]*', str(requested)):
+                  raise RuntimeError('A positive numeric run ID is required.')
+              repo = os.environ['GH_REPO']
+              run = api(f'repos/{repo}/actions/runs/{requested}')
+              if run['path'] != '.github/workflows/release.yml' or run['status'] != 'completed' or run['conclusion'] != 'failure':
+                  raise RuntimeError('Only a completed, failed release workflow can be retried.')
+              tag = run['head_branch']
+              if not re.fullmatch(r'v[0-9]+\.[0-9]+\.[0-9]+', tag):
+                  raise RuntimeError('The failed run must target a version tag.')
+              obj = api(f'repos/{repo}/git/ref/tags/{tag}')['object']
+              for _ in range(4):
+                  if obj['type'] != 'tag':
+                      break
+                  obj = api(f'repos/{repo}/git/tags/{obj["sha"]}')['object']
+              if obj['type'] != 'commit' or obj['sha'] != run['head_sha']:
+                  raise RuntimeError('The tag no longer matches the failed run; refusing to retry.')
+              release = command(['gh', 'api', f'repos/{repo}/releases/tags/{tag}'])
+              if release.returncode == 0:
+                  if not json.loads(release.stdout)['draft']:
+                      raise RuntimeError('This release is already published; it will not be replaced.')
+              elif 'HTTP 404' not in release.stderr:
+                  raise RuntimeError(release.stderr.strip())
+
+              jobs = api(f'repos/{repo}/actions/runs/{requested}/jobs?filter=latest&per_page=100')['jobs']
+              for job in jobs:
+                  failed = [s for s in job['steps'] if s['conclusion'] == 'failure']
+                  if not failed:
+                      continue
+                  log = command(['gh', 'api', f'repos/{repo}/actions/jobs/{job["id"]}/logs'])
+                  if log.returncode:
+                      raise RuntimeError(log.stderr.strip())
+                  for step in failed:
+                      start, end = step['started_at'][:19], step['completed_at'][:19]
+                      lines = [line for line in log.stdout.splitlines() if start <= line[:19] <= end]
+                      annotation('warning', 'Previous release failure', '\n'.join(lines[-80:])[-12000:])
+
+              result = command(['gh', 'run', 'rerun', str(requested), '--failed'])
+              if result.returncode:
+                  raise RuntimeError(result.stderr.strip())
+              print(f'Retry requested for {tag}, original commit {run["head_sha"]}, run {requested}.')
+          except Exception as error:
+              annotation('error', 'Release retry failed', str(error))
+              raise SystemExit(1)
+          PY

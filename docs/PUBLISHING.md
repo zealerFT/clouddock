@@ -74,6 +74,10 @@ The workflow uses GitHub's temporary repository token. No cloud credentials, per
 
 Check the workflow result and the published assets before announcing a release. A failed build does not publish the draft. An existing unpublished tag can be retried through **Actions → Publish macOS app → Run workflow**, providing that exact tag. The workflow refuses to overwrite an already published release. For source fixes after publication, use a new version and tag; never move the old tag or silently replace its assets.
 
+Changes to app source, packaging scripts, the version file, or the release workflow on `main` also run build and archive verification without publishing a release. Packaging failures include the last log lines in the check annotations.
+
+For a transient failure of an unpublished tagged release, use **Actions → Retry failed release → Run workflow** with the failed run ID. A maintainer working through Git can instead update `.github/release-retry.json` and push it to `main`. This workflow reports the failed step's log excerpt and reruns the original job using the repository's temporary Actions token. It checks that the tag still points to the original commit and refuses to retry a published release; no personal API token or tag replacement is needed. Diagnose failures before requesting further retries.
+
 ## Public file set
 
 Publish source, fake test fixtures, documentation, and reviewed images. `.gitignore` excludes build products, downloaded dependencies, local development notes, credentials, state, and logs. `scripts/check-public-files.py` checks the tracked public file set, and the source ZIP uses that same set. When building an extracted source ZIP without Git, it uses the explicit list in that script.
