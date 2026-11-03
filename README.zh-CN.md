@@ -76,9 +76,9 @@ bash scripts/package.sh
 
 ```text
 dist/CloudDock.app
-dist/CloudDock-0.5.7-arm64.dmg
-dist/CloudDock-0.5.7-arm64.zip
-dist/CloudDock-0.5.7-source.zip
+dist/CloudDock-0.5.8-arm64.dmg
+dist/CloudDock-0.5.8-arm64.zip
+dist/CloudDock-0.5.8-source.zip
 dist/SHA256SUMS
 ```
 

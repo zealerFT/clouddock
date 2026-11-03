@@ -25,20 +25,25 @@ with tempfile.TemporaryDirectory(prefix='clouddock-s3-fixture-') as temporary:
         server = subprocess.Popen([str(moto), '-H', '127.0.0.1', '-p', str(port)], stdout=log, stderr=log)
         try:
             ready = False
-            for _ in range(100):
+            # A fresh CI Python environment can take longer to import Moto.
+            deadline = time.monotonic() + 60
+            last_error = None
+            while time.monotonic() < deadline:
                 if server.poll() is not None:
                     raise RuntimeError((folder / 'server.log').read_text())
                 try:
-                    urllib.request.urlopen(endpoint, timeout=0.2).close()
+                    urllib.request.urlopen(endpoint, timeout=1).close()
                     ready = True
                 except urllib.error.HTTPError:
                     ready = True
-                except (urllib.error.URLError, TimeoutError):
-                    time.sleep(0.1)
+                except (urllib.error.URLError, TimeoutError) as error:
+                    last_error = error
+                    time.sleep(0.2)
                 if ready:
                     break
             if not ready:
-                raise RuntimeError('Local fixture did not become ready')
+                diagnostic = (folder / 'server.log').read_text()[-5000:]
+                raise RuntimeError(f'Local fixture did not become ready within 60 seconds: {last_error}\n{diagnostic}')
             subprocess.run([str(python), '-c',
                 'import boto3,sys; boto3.client("s3", endpoint_url=sys.argv[1], aws_access_key_id="clouddock-fixture", aws_secret_access_key="fixture-only-not-a-real-secret", region_name="us-east-1").create_bucket(Bucket="fixture")',
                 endpoint], check=True)

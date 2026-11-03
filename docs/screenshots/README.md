@@ -1,6 +1,6 @@
 # App screenshots
 
-The app currently uses a Simplified Chinese interface. Capture the actual **CloudDock 0.5.7** app; use the same images from both README languages.
+The app currently uses a Simplified Chinese interface. Capture the actual **CloudDock 0.5.8** app; use the same images from both README languages.
 
 Screenshots have not been captured for this repository yet. No mockups are presented as app screenshots.
 

@@ -1,8 +1,8 @@
-CloudDock 0.5.7 — macOS Apple Silicon
+CloudDock 0.5.8 — macOS Apple Silicon
 
 系统要求：macOS 14 或更新版本，M1 / M2 / M3 / M4 等 Apple Silicon Mac。
 
-1. 打开 CloudDock-0.5.7-arm64.dmg。
+1. 打开 CloudDock-0.5.8-arm64.dmg。
 2. 把 CloudDock.app 拖到 Applications。
 3. 从“应用程序”打开 CloudDock，点击“新建连接”。
 4. 选择存储服务，填写 Endpoint、Region 和访问凭据；凭据默认保存到软件本机，也可改为 macOS 钥匙串，测试后保存。

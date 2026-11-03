@@ -2,7 +2,7 @@
 
 Notable changes to CloudDock are documented here. Version numbers match the packaged app's `CFBundleShortVersionString`.
 
-## [0.5.7] - 2026-11-03
+## [0.5.8] - 2026-11-03
 
 ### Documentation and packaging
 
@@ -13,6 +13,14 @@ Notable changes to CloudDock are documented here. Version numbers match the pack
 - Publish the first GitHub release with tagged source, an Apple Silicon DMG, app ZIP, source ZIP, and checksums.
 - Build releases with GitHub Actions, keep a shared version file, and document development in the Git checkout.
 - Remove local build paths from the distributable app binary.
+
+### Fixed
+
+- Allow the isolated S3 test server up to 60 seconds to start on a fresh CI runner and report its log on startup failure.
+
+Version 0.5.7 was tagged during release setup; its CI run stopped before publishing installers. Version 0.5.8 is the first downloadable GitHub release.
+
+## [0.5.7] - 2026-11-02
 
 ### Fixed
 

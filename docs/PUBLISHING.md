@@ -55,12 +55,12 @@ macos apple-silicon swift swiftui s3 minio aliyun-oss google-cloud-storage objec
 
 ## Publish with a tag
 
-For the initial release, the version is `0.5.7`, build `12`:
+For the initial release, the version is `0.5.8`, build `13`:
 
 ```bash
 git push origin main
-git tag -a v0.5.7 -m "CloudDock 0.5.7"
-git push origin v0.5.7
+git tag -a v0.5.8 -m "CloudDock 0.5.8"
+git push origin v0.5.8
 ```
 
 Replace the example version for subsequent releases. The [release workflow](../.github/workflows/release.yml) builds the tag on a GitHub-hosted Apple Silicon macOS runner. It checks the version, runs the core and Moto suites, builds the packages, and verifies signatures, architecture, source contents, path privacy, and checksums. It creates a draft, uploads all assets, then publishes the release as latest:
